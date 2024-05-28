@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ContinousObservationModifier<T>: ViewModifier {
     
-    init(_ value: T, perform: @escaping (T) -> ()) {
+    init(_ value: T, perform: @escaping (T) async -> ()) {
         withContinousObservation(of: value, perform: perform)
     }
     
@@ -11,9 +11,11 @@ struct ContinousObservationModifier<T>: ViewModifier {
         content
     }
     
-    func withContinousObservation(of value: @escaping @autoclosure () -> T, perform: @escaping (T) -> Void) {
-        withObservationTracking {
-            perform(value())
+    func withContinousObservation(of value: @escaping @autoclosure () -> T, perform: @escaping (T) async -> Void) {
+        let _ = withObservationTracking {
+            Task { @MainActor in
+                await perform(value())
+            }
         } onChange: {
             Task { @MainActor in
                 withContinousObservation(of: value(), perform: perform)
@@ -28,9 +30,9 @@ public extension View {
     /// - Parameters:
     ///   - value: The value to check against when determining whether
     ///     to run the closure.
-    ///   - perform: A closure to run when the value changes.
+    ///   - perform: An async closure to run when the value changes.
     /// - Returns: A view that fires an action when the specified value changes.
-    func onObservedChange<T>(of value: T, perform: @escaping (T) -> ()) -> some View {
+    func onObservedChange<T>(of value: T, perform: @escaping (T) async -> ()) -> some View {
         self.modifier(ContinousObservationModifier(value, perform: perform))
     }
 }
