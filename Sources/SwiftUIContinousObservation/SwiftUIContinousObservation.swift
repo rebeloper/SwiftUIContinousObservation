@@ -32,7 +32,7 @@ public extension View {
     ///     to run the closure.
     ///   - perform: An async closure to run when the value changes.
     /// - Returns: A view that fires an action when the specified value changes.
-    func onObservedChange<T>(of value: T, perform: @escaping (T) async -> ()) -> some View {
+    func onChangeOf<T>(_ value: T, perform: @escaping (T) async -> ()) -> some View {
         self.modifier(ContinousObservationModifier(value, perform: perform))
     }
 }
