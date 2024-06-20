@@ -55,18 +55,18 @@ public extension View {
     ///     to run the closure.
     ///   - perform: An async closure to run when the value changes.
     /// - Returns: A view that fires an action when the specified value changes.
-    func onChangeOf<T>(_ value: T, perform: @escaping (T) async -> ()) -> some View {
+    func onReceive<T>(of value: T, perform: @escaping (T) async -> ()) -> some View {
         self.modifier(ContinousObservationModifier(value, perform: perform))
     }
     
-    /// Adds a modifier for this view that fires an action when a specific optional
-    /// `@Observable` value changes.
+    /// Adds a modifier for this view that fires an action when a specific
+    /// `@Observable` optional value changes.
     /// - Parameters:
     ///   - value: The optional value to check against when determining whether
     ///     to run the closure.
-    ///   - perform: An async closure to run when the value changes.
-    /// - Returns: A view that fires an action when the specified value changes.
-    func onChangeOfOptional<T>(_ value: T?, perform: @escaping (T?) async -> ()) -> some View {
+    ///   - perform: An async closure to run when the optional value changes.
+    /// - Returns: A view that fires an action when the specified optional value changes.
+    func onReceive<T>(of value: T?, perform: @escaping (T?) async -> ()) -> some View {
         self.modifier(ContinousOptionalObservationModifier(value, perform: perform))
     }
 }
